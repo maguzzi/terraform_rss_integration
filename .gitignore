@@ -1,0 +1,7 @@
+vars/
+target/
+.terraform/
+.terraform*
+terraform.tfstate
+**/__pycache__
+python_deps/
