@@ -1,15 +1,15 @@
 variable "rss_url" {
-  type = string
+  type        = string
   description = "url for the rss feed"
 }
 
 variable "access_token" {
-  type = string
+  type        = string
   description = "access token got by linkedin"
 }
 
 variable "profile_id" {
-  type = string
+  type        = string
   description = "linkedin profile"
 }
 

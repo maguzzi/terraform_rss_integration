@@ -1,12 +1,13 @@
 resource "aws_lambda_function" "rss_parser" {
-  filename      = data.archive_file.rss_parser_zip.output_path
-  function_name = "get_rss_content"
-  role          = aws_iam_role.lambda_role.arn
-  handler       = "rss_parser.handler"
-  runtime       = "python3.13"
-  timeout       = 15
-  memory_size   = 128
-  publish       = false
+  filename         = data.archive_file.rss_parser_zip.output_path
+  function_name    = "get_rss_content"
+  role             = aws_iam_role.lambda_role.arn
+  source_code_hash = data.archive_file.rss_parser_zip.output_base64sha256
+  handler          = "rss_parser.handler"
+  runtime          = "python3.13"
+  timeout          = 15
+  memory_size      = 128
+  publish          = false
 
   environment {
     variables = {
