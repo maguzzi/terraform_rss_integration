@@ -1,4 +1,4 @@
-vars/
+dev.tfvars
 target/
 .terraform/
 .terraform*
