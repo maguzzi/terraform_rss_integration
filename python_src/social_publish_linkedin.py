@@ -13,15 +13,15 @@ headers = {
   }
 
 def publish_to_profile(processed_post,profile_id):
-  #asset_urn = linkedin_media_share_manager.preare_media_for_post(processed_post,profile_id)
-  publish(processed_post,to_profile_payload(processed_post,profile_id,'asset_urn'))
+  asset_urn = linkedin_media_share_manager.preare_media_for_post(processed_post,profile_id)
+  publish(processed_post,to_profile_payload(processed_post,profile_id,asset_urn))
 
 def remove_html_tags_with_newlines(html_content):
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
     # Replace heading tags (h1 to h6) with newlines
-    for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6','br']):
+    for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6','br','p']):
         tag.replace_with(tag.get_text() + '\n')
 
     for tag in soup.find_all(['li']):
@@ -70,12 +70,12 @@ def publish(processed_post, json_payload):
   
   logger.info(json_payload)
 
-  #response = requests.post(publish_url, headers=headers, json=json_payload)
+  response = requests.post(publish_url, headers=headers, json=json_payload)
 
-  #if response.status_code == 201:
-  #    logger.info("Successfully posted to LinkedIn!")
-  #    logger.debug(response.json())
-  #else:
-  #    logger.error(f"Failed to post to LinkedIn. Status code: {response.status_code}")
-  #   logger.error(response.text)
+  if response.status_code == 201:
+      logger.info("Successfully posted to LinkedIn!")
+      logger.debug(response.json())
+  else:
+      logger.error(f"Failed to post to LinkedIn. Status code: {response.status_code}")
+      logger.error(response.text)
 
