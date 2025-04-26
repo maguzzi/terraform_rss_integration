@@ -14,6 +14,7 @@ resource "aws_lambda_function" "rss_to_linkedin" {
       RSS_URL      = var.rss_url
       ACCESS_TOKEN = var.access_token
       PROFILE_ID   = var.profile_id
+      MESSAGE_TEMPLATE = var.message_template
     }
   }
 

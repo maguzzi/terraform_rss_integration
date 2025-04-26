@@ -13,4 +13,9 @@ variable "profile_id" {
   description = "linkedin profile"
 }
 
+variable "message_template" {
+  type = string
+  description = "template for linkedin message"
+  default = "$translated_text"
+}
       
