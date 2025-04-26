@@ -30,18 +30,21 @@ def publish_to_profile(processed_post,profile_id):
 def prepare_text(processed_post):
   text_no_html = remove_html_tags_with_newlines(processed_post.get("body","no body")[:safeguard_message_length])
   data = {"translated_text":f"{translate(text_no_html)}"}
-  logger.info(f"{template} {data}")
   return template.substitute(data)
 
 def remove_html_tags_with_newlines(html_content):
   soup = BeautifulSoup(html_content, 'html.parser')
-  for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6','br','p']):
-    tag.replace_with(tag.get_text() + '\n')
 
   for tag in soup.find_all(['li']):
     tag.replace_with(f"- {tag.get_text()}\n")
 
-  return soup.get_text(separator='').strip()
+  for tag in soup.find_all(['br']):
+    tag.replace_with(tag.get_text() + '\n')
+
+  for tag in soup.find_all(['p']):
+    tag.replace_with(tag.get_text() + '\n')
+
+  return soup.get_text(separator=' ').strip()
     
 def translate(text):
   result = translate_client.translate_text(Text=text, SourceLanguageCode="en", TargetLanguageCode="it")
