@@ -44,6 +44,9 @@ def remove_html_tags_with_newlines(html_content):
   for tag in soup.find_all(['p']):
     tag.replace_with(tag.get_text() + '\n')
 
+  for tag in soup.find_all(['h1','h2','h3','h4','h5']):
+    tag.replace_with(tag.get_text() + '\n')
+
   return soup.get_text(separator=' ').strip()
     
 def translate(text):
