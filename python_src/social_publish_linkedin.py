@@ -28,7 +28,7 @@ def publish_to_profile(processed_post,profile_id):
   requests_facade.publish_with_image_to_profile(profile_id,text,media_urn,processed_post.get("title","No title"))
   
 def prepare_text(processed_post):
-  text_no_html = remove_html_tags_with_newlines(processed_post.get("body","no body")[:safeguard_message_length])
+  text_no_html = remove_html_tags_with_newlines(processed_post["summary"][:safeguard_message_length])
   data = {"translated_text":f"{translate(text_no_html)}"}
   return template.substitute(data)
 

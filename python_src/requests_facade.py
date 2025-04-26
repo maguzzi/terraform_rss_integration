@@ -38,6 +38,22 @@ def upload_image(url,data):
   put(url,data,201)
 
 def publish_with_image_to_profile(profile_id,text,media_urn,title):
+
+  media = []
+  if media_urn is not None:
+    media = [
+      {
+        "status": "READY",
+        "description": {
+          "text": f"{title}"
+        },
+        "media":f"{media_urn}",
+        "title": {
+          "text": f"{title}"
+        }
+      }
+    ]
+
   json_payload = {
     "author": f"urn:li:person:{profile_id}",
     "lifecycleState": "PUBLISHED",
@@ -46,19 +62,8 @@ def publish_with_image_to_profile(profile_id,text,media_urn,title):
             "shareCommentary": {
                 "text": f"{text}"
             },
-            "shareMediaCategory": "IMAGE",
-            "media": [
-                {
-                    "status": "READY",
-                    "description": {
-                        "text": f"{title}"
-                    },
-                    "media":f"{media_urn}",
-                    "title": {
-                        "text": f"{title}"
-                    }
-                }
-            ]
+            "shareMediaCategory": f"{"IMAGE" if media_urn is not None else "NONE"}",
+            "media": media
         }
     },
     "visibility": {

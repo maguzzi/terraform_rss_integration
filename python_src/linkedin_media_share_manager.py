@@ -8,10 +8,14 @@ import requests_facade
 from logger import logger
 
 def preare_media_for_post(processed_post,profile_id):
-  upload_url_urn = requests_facade.get_upload_url_urn(profile_id)
-  filepath = download_image(processed_post["image"])
-  upload_image(upload_url_urn["upload_url"],filepath)
-  return upload_url_urn["asset_urn"]
+  image = processed_post["image"]
+  if image is not None:
+    upload_url_urn = requests_facade.get_upload_url_urn(profile_id)
+    filepath = download_image(processed_post["image"])
+    upload_image(upload_url_urn["upload_url"],filepath)
+    return upload_url_urn["asset_urn"]
+  else:
+    return None
 
 def download_image(image_url):
   temp_dir = tempfile.mkdtemp()
