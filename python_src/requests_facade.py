@@ -37,10 +37,16 @@ def get_upload_url_urn(profile_id):
 def upload_image(url,data):
   put(url,data,201)
 
-def publish_with_image_to_profile(profile_id,text,media_urn,title):
+def publish_with_image_to_profile(profile_id,text,media_urn,link,title,summary):
+
+  logger.info(f"link: {link}")
+  logger.info(f"title: {title}")
+  logger.info(f"media_urn: {media_urn}")
 
   media = []
+  shareMediaCategory = "NONE"
   if media_urn is not None:
+    shareMediaCategory = "IMAGE"
     media = [
       {
         "status": "READY",
@@ -49,10 +55,25 @@ def publish_with_image_to_profile(profile_id,text,media_urn,title):
         },
         "media":f"{media_urn}",
         "title": {
-          "text": f"{title}"
+          "text": f"{summary}"
         }
       }
     ]
+  elif link is not None:
+    shareMediaCategory = "ARTICLE"
+    media = [
+        {
+          "status": "READY",
+          "description": {
+            "text": f"{summary}"
+          },
+          "originalUrl": f"{link}",
+          "title": {
+            "text": f"{title}"
+          }
+        }
+      ]
+
 
   json_payload = {
     "author": f"urn:li:person:{profile_id}",
@@ -62,7 +83,7 @@ def publish_with_image_to_profile(profile_id,text,media_urn,title):
             "shareCommentary": {
                 "text": f"{text}"
             },
-            "shareMediaCategory": f"{"IMAGE" if media_urn is not None else "NONE"}",
+            "shareMediaCategory": shareMediaCategory,
             "media": media
         }
     },
