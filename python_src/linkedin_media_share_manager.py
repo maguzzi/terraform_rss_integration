@@ -7,7 +7,7 @@ import requests_facade
 
 from logger import logger
 
-def preare_media_for_post(processed_post,profile_id):
+def prepare_media_for_post(processed_post,profile_id):
   image = processed_post["image"]
   if image is not None:
     upload_url_urn = requests_facade.get_upload_url_urn(profile_id)
