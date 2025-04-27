@@ -4,30 +4,26 @@ import os
 
 headers = {
     "Authorization": f"Bearer {os.environ.get("ACCESS_TOKEN")}",
-    "Content-Type": "image/webp",
+    "LinkedIn-Version": "202504",
+    "X-RestLi-Protocol-Version": "2.0.0"
 }
 
 def get_upload_url_urn(profile_id):
+  
   json_payload = {
-    "registerUploadRequest": {
-      "recipes": [
-        "urn:li:digitalmediaRecipe:feedshare-image"
-      ],
-      "owner": f"urn:li:person:{profile_id}", 
-        "serviceRelationships": [
-            {
-                "relationshipType": "OWNER",
-                "identifier": "urn:li:userGeneratedContent"
-            }
-        ]
+    "initializeUploadRequest": {
+        "owner": f"urn:li:person:{profile_id}"
     }
   }
-  response =  post("https://api.linkedin.com/v2/assets?action=registerUpload",json_payload,200)
   
+  response =  post("https://api.linkedin.com/rest/images?action=initializeUpload",json_payload,200)
   response_json = response.json()
   
-  upload_url = response_json["value"]["uploadMechanism"]["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"]["uploadUrl"]
-  asset_urn = response_json["value"]["asset"]
+  upload_url = response_json["value"]["uploadUrl"]
+  asset_urn = response_json["value"]["image"]
+  expires_at = response_json["value"]["uploadUrlExpiresAt"]
+
+  logger.info(f"Upload successful for image {asset_urn}. Upload URL expires at {expires_at}")
 
   return {
     "upload_url": upload_url,
@@ -37,62 +33,47 @@ def get_upload_url_urn(profile_id):
 def upload_image(url,data):
   put(url,data,201)
 
-def publish_with_image_to_profile(profile_id,text,media_urn,link,title,summary):
+def publish_to_profile(profile_id,text,media_urn,link,title,summary):
 
   logger.info(f"link: {link}")
   logger.info(f"title: {title}")
+  logger.info(f"summary: {summary}")
+  logger.info(f"text: {text}")
   logger.info(f"media_urn: {media_urn}")
 
-  media = []
-  shareMediaCategory = "NONE"
-  if media_urn is not None:
-    shareMediaCategory = "IMAGE"
-    media = [
-      {
-        "status": "READY",
-        "description": {
-          "text": f"{title}"
-        },
-        "media":f"{media_urn}",
-        "title": {
-          "text": f"{summary}"
+  content = None
+  
+  if media_urn is not None: # post contains image(s)
+    content = {
+        "media": {
+            "id": media_urn,
+            "altText": title
         }
-      }
-    ]
-  elif link is not None:
-    shareMediaCategory = "ARTICLE"
-    media = [
-        {
-          "status": "READY",
-          "description": {
-            "text": f"{summary}"
-          },
-          "originalUrl": f"{link}",
-          "title": {
-            "text": f"{title}"
-          }
-        }
-      ]
-
+    }
+  elif link is not None: # post contains link
+    content = {
+     "article": {
+         "source": link,
+         "title": text,
+         "description": text
+     }
+    }
 
   json_payload = {
     "author": f"urn:li:person:{profile_id}",
-    "lifecycleState": "PUBLISHED",
-    "specificContent": {
-        "com.linkedin.ugc.ShareContent": {
-            "shareCommentary": {
-                "text": f"{text}"
-            },
-            "shareMediaCategory": shareMediaCategory,
-            "media": media
-        }
+    "commentary": text,
+    "visibility": "PUBLIC",
+    "distribution": {
+        "feedDistribution": "MAIN_FEED",
+        "targetEntities": [],
+        "thirdPartyDistributionChannels": []
     },
-    "visibility": {
-        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
-    }
+    "lifecycleState": "PUBLISHED",
+    "isReshareDisabledByAuthor": False,
+    "content": content
   }
 
-  post("https://api.linkedin.com/v2/ugcPosts",json_payload,201)
+  post("https://api.linkedin.com/rest/posts",json_payload,201)
 
 
 def put(url,data,ok_code):
