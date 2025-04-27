@@ -23,7 +23,7 @@ template = Template(os.environ.get("MESSAGE_TEMPLATE"))
 ## static definitions end ##
 
 def publish_to_profile(processed_post,profile_id):
-  media_urn = linkedin_media_share_manager.preare_media_for_post(processed_post,profile_id)
+  media_urn = linkedin_media_share_manager.prepare_media_for_post(processed_post,profile_id)
   text = prepare_text(processed_post)
   requests_facade.publish_to_profile(profile_id,text,media_urn,processed_post["link"],processed_post["title"],processed_post["summary"])
   
