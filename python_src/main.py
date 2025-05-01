@@ -17,7 +17,7 @@ def process_latest_rss_post(rss_url):
     try:
         feed = feedparser.parse(rss_url)
 
-        # this is the most recent entry, to be improved
+        # TODO this is brutally the most recent entry, **to be improved**
         latest_entry = feed.entries[0] 
 
         result = {

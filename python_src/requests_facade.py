@@ -54,7 +54,7 @@ def publish_to_profile(profile_id,text,media_urn,link,title,summary):
     content = {
      "article": {
          "source": link,
-         "title": text,
+         "title": title,
          "description": text
      }
     }
