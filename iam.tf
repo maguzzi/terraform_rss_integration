@@ -33,6 +33,13 @@ resource "aws_iam_policy" "rss_to_linkedin_policy" {
         "logs:PutLogEvents"
       ],
       "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "translate:*"
+      ],
+      "Resource": "*"
     }
   ]
 }

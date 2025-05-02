@@ -5,17 +5,19 @@ variable "rss_url" {
 
 variable "access_token" {
   type        = string
+  sensitive   = true
   description = "access token got by linkedin"
 }
 
 variable "profile_id" {
   type        = string
+  sensitive   = true
   description = "linkedin profile"
 }
 
 variable "message_template" {
-  type = string
+  type        = string
   description = "template for linkedin message"
-  default = "$translated_text"
+  default     = "$translated_text"
 }
       
