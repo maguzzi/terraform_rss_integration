@@ -29,7 +29,7 @@ def publish_to_profile(processed_post,profile_id):
   
 def prepare_text(processed_post):
   text_no_html = remove_html_tags_with_newlines(processed_post["summary"][:safeguard_message_length])
-  data = {"translated_text":f"{translate(escape_special_chars(text_no_html))}"}
+  data = {"translated_text":f"{escape_special_chars(translate(text_no_html))}"}
   return template.substitute(data)
 
 def remove_html_tags_with_newlines(html_content):
@@ -51,8 +51,9 @@ def remove_html_tags_with_newlines(html_content):
     
 def escape_special_chars(text):
     chars = ["\\", "|", "{", "}", "@", "[", "]", "(", ")", "<", ">", "#", "*", "_", "~"]
+    backslash = '\\'
     for char in chars:
-        text = text.replace(char, "\\"+char)
+        text = text.replace(char, backslash+char)
     return text
 
 def translate(text):
