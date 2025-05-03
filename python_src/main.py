@@ -2,7 +2,15 @@ import feedparser
 import os
 import social_publish_linkedin
 
+import boto3
+from boto3.dynamodb.conditions import Key
+
 from logger import logger
+
+dynamodb = boto3.resource('dynamodb')
+dynamodb_table = os.environ.get("DYNAMO_DB_TABLE")
+print(f"{dynamodb} - {dynamodb_table}")
+table = dynamodb.Table(dynamodb_table)
 
 def get_rss_url():
     return os.environ.get("RSS_URL")
@@ -18,10 +26,8 @@ def process_event(event, context):
 def process_latest_rss_post(rss_url):
 
     try:
-        feed = feedparser.parse(rss_url)
-
-        # TODO this is brutally the most recent entry, **to be improved**
-        latest_entry = feed.entries[0] 
+    
+        latest_entry = if_not_written_return(rss_url)
 
         result = {
             "title": latest_entry.get("title", "No Title"),
@@ -49,3 +55,18 @@ def process_latest_rss_post(rss_url):
     except Exception as e:
         print(f"Error processing RSS feed: {e}")
         return None
+
+def if_not_written_return(rss_url,index=0):
+  feed = feedparser.parse(rss_url)
+  latest_entry = feed.entries[index]
+  logger.info(f"query for {rss_url},{latest_entry.id}")
+  response = table.query(
+    KeyConditionExpression=Key('rss_id').eq(rss_url) & Key('post_id').eq(latest_entry.id)
+  )
+  logger.info(f"response {response}")
+  if (response["Count"] == 0):
+    return feed.entries[0]
+  else:
+    logger.info(f"entry with id {latest_entry.id} already present for rss {rss_url}")
+  
+  
