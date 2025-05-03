@@ -4,8 +4,11 @@ import social_publish_linkedin
 
 from logger import logger
 
+def get_rss_url():
+    return os.environ.get("RSS_URL")
+
 def process_event(event, context):
-    rss_url = os.environ.get("RSS_URL")
+    rss_url = get_rss_url()
     logger.info(f"reading from rss: {rss_url}")
 
     processed_post = process_latest_rss_post(rss_url)
@@ -28,6 +31,8 @@ def process_latest_rss_post(rss_url):
             "image": None
         }
 
+        logger.info(result["summary"])
+
         if "content" in latest_entry:
             for item in latest_entry.content:
                 if item.type.startswith("image"):
@@ -36,6 +41,8 @@ def process_latest_rss_post(rss_url):
                     result["body"] = item.get("value")
                 else:
                     print("noop")
+
+        logger.debug(result)
 
         return result
 

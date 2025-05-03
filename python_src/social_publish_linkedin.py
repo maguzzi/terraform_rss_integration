@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from logger import logger
 from string import Template
 import boto3
+import re
 
 ## static definitions start ##
 
@@ -35,19 +36,14 @@ def prepare_text(processed_post):
 def remove_html_tags_with_newlines(html_content):
   soup = BeautifulSoup(html_content, 'html.parser')
 
-  for tag in soup.find_all(['li']):
-    tag.replace_with(f"- {tag.get_text()}\n")
-
-  for tag in soup.find_all(['br']):
+  for tag in soup.find_all(['br','p','ul','li','h1','h2','h3','h4','h5']):
     tag.replace_with(tag.get_text() + '\n')
 
-  for tag in soup.find_all(['p']):
-    tag.replace_with(tag.get_text() + '\n')
+  text = soup.get_text(separator='').strip()
 
-  for tag in soup.find_all(['h1','h2','h3','h4','h5']):
-    tag.replace_with(tag.get_text() + '\n')
+  text = re.sub(r'\n{3,}', '\n\n', text)
 
-  return soup.get_text(separator='').strip()
+  return text
     
 def escape_special_chars(text):
     chars = ["\\", "|", "{", "}", "@", "[", "]", "(", ")", "<", ">", "#", "*", "_", "~"]
