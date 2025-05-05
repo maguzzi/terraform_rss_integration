@@ -21,29 +21,35 @@ EOF
 resource "aws_iam_policy" "rss_to_linkedin_policy" {
   name        = "rss_to_linkedin_policy"
   description = "IAM policy for Lambda execution"
-  policy      = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "translate:*"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "translate:*"
+        ],
+        "Resource" : "*"
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "dynamodb:*"
+        ],
+        "Resource" : aws_dynamodb_table.processed_post.arn
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "rss_to_linkedin_policy_attachment" {

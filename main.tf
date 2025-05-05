@@ -15,6 +15,7 @@ resource "aws_lambda_function" "rss_to_linkedin" {
       ACCESS_TOKEN     = var.access_token
       PROFILE_ID       = var.profile_id
       MESSAGE_TEMPLATE = var.message_template
+      DYNAMO_DB_TABLE  = aws_dynamodb_table.processed_post.name
     }
   }
 

@@ -20,4 +20,3 @@ variable "message_template" {
   description = "template for linkedin message"
   default     = "$translated_text"
 }
-      
