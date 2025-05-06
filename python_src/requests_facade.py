@@ -33,7 +33,7 @@ def get_upload_url_urn(profile_id):
 def upload_image(url,data):
   put(url,data,201)
 
-def publish_to_profile(profile_id,text,media_urn,link,title,summary):
+def publish_to_profile(profile_id,text,media_urn,link,title,summary,mode):
 
   logger.info(f"link: {link}")
   logger.info(f"title: {title}")
@@ -43,19 +43,20 @@ def publish_to_profile(profile_id,text,media_urn,link,title,summary):
 
   content = None
   
-  if media_urn is not None: # post contains image(s)
+  if mode == 'IMAGE' and media_urn is not None: # post contains image(s)
     content = {
         "media": {
             "id": media_urn,
             "altText": title
         }
     }
-  elif link is not None: # post contains link
+  elif mode == 'ARTICLE' and link is not None: # post contains link
     content = {
      "article": {
          "source": link,
          "title": title,
-         "description": text
+         "description": text,
+         "thumbnail": media_urn
      }
     }
 

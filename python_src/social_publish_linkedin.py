@@ -23,15 +23,19 @@ template = Template(os.environ.get("MESSAGE_TEMPLATE"))
 
 ## static definitions end ##
 
-def publish_to_profile(processed_post,profile_id):
+def publish_to_profile(processed_post,profile_id,mode):
   media_urn = linkedin_media_share_manager.prepare_media_for_post(processed_post,profile_id)
-  text = prepare_text(processed_post)
-  requests_facade.publish_to_profile(profile_id,text,media_urn,processed_post["link"],processed_post["title"],processed_post["summary"])
+  title = processed_post["title"]
+  text = prepare_text(processed_post,title)
+  requests_facade.publish_to_profile(profile_id,text,media_urn,processed_post["link"],title,processed_post["summary"],mode)
   
-def prepare_text(processed_post):
+def prepare_text(processed_post,title):
   text_no_html = remove_html_tags_with_newlines(processed_post["summary"][:safeguard_message_length])
-  data = {"translated_text":f"{escape_special_chars(translate(text_no_html))}"}
-  return template.substitute(data)
+  data = {
+    "title":translate(title),
+    "translated_text":f"{translate(text_no_html)}"
+    }
+  return escape_special_chars(template.substitute(data)).replace("--","\n")
 
 def remove_html_tags_with_newlines(html_content):
   soup = BeautifulSoup(html_content, 'html.parser')
